@@ -1,0 +1,55 @@
+﻿<Window x:Class="FarmInventory.Views.Admin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FarmInventory.Views"
+        mc:Ignorable="d"
+        Title="Admin" Height="485" Width="803">
+    <Grid>
+        <Border BorderBrush="#FF696666" BorderThickness="1" HorizontalAlignment="Left" Height="150" Margin="39,270,0,0" VerticalAlignment="Top" Width="270">
+            <Border.Background>
+                <SolidColorBrush Color="#FFBAD0F3" Opacity="0.5"/>
+            </Border.Background>
+        </Border>
+        <Border BorderBrush="#FF696666" BorderThickness="1" HorizontalAlignment="Left" Height="199" Margin="39,65,0,0" VerticalAlignment="Top" Width="270">
+            <Border.Background>
+                <SolidColorBrush Color="#FFBAD0F3" Opacity="0.5"/>
+            </Border.Background>
+        </Border>
+        <TextBox x:Name="tbProductName" HorizontalAlignment="Left" Margin="173,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"  FontSize="16"/>
+        <Label x:Name="lbProductName" Content="Product name:" HorizontalAlignment="Left" Margin="44,97,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <TextBox x:Name="tbProductID" HorizontalAlignment="Left" Margin="173,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="16"/>
+        <Label x:Name="lbProductID" Content="Product ID:" HorizontalAlignment="Left" Margin="44,130,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <TextBox x:Name="tbAmountKg" HorizontalAlignment="Left" Margin="173,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="16"/>
+        <Label x:Name="lbAmountKg" Content="Amount (kg):" HorizontalAlignment="Left" Margin="45,159,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <TextBox x:Name="tbPricePerKg" HorizontalAlignment="Left" Margin="173,193,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="16"/>
+        <Label x:Name="lbPricePerKg" Content="Price (CAD)/kg:" HorizontalAlignment="Left" Margin="45,189,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Button x:Name="btnInsert" Content="Insert" HorizontalAlignment="Left" Margin="173,227,0,0" VerticalAlignment="Top" FontSize="16" Click="btnInsert_Click" Width="120"/>
+        <Label x:Name="lblTitle" Content="HAPPY FARM INVENTORY" HorizontalAlignment="Left" Margin="39,15,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Foreground="#FF242A8E"/>
+        <Button x:Name="btnDelete" Content="Delete" HorizontalAlignment="Left" Margin="702,62,0,0" VerticalAlignment="Top" FontSize="16" RenderTransformOrigin="0.555,0.843" Click="btnDelete_Click" Width="61"/>
+        <Button x:Name="btnUpdate" Content="Direct Update" HorizontalAlignment="Left" Margin="52,375,0,0" VerticalAlignment="Top" FontSize="16" Width="110" Height="28" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="btnUpdate_Click" />
+        <DataGrid x:Name="dataView" AutoGenerateColumns="False" Margin="338,117,26,29" FontSize="16">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Product Name" Binding="{Binding name}" />
+                <DataGridTextColumn Header="Product ID" Binding="{Binding id}"/>
+                <DataGridTextColumn Header="Amount (kg)" Binding="{Binding amount}"/>
+                <DataGridTextColumn Header="Price(CAD)/kg" Binding="{Binding price}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="btnShowAll" Content="Show All" HorizontalAlignment="Left" Margin="616,62,0,0" VerticalAlignment="Top" FontSize="16" Width="80" Click="btnShowAll_Click" RenderTransformOrigin="0.864,0.487"/>
+        <Button x:Name="btnSearch" Content="Search" HorizontalAlignment="Left" Margin="547,62,0,0" VerticalAlignment="Top" FontSize="16" Width="62" Click="btnSearch_Click"/>
+        <TextBox x:Name="tbSearchId" HorizontalAlignment="Left" Margin="432,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="106" FontSize="16" Height="25"/>
+        <Label x:Name="lblTitle_Copy" Content="Insert New Product" HorizontalAlignment="Left" Margin="44,68,0,0" VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
+        <Label x:Name="lbProductIDSearch" Content="Product ID:" HorizontalAlignment="Left" Margin="338,59,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Label x:Name="lblDeleteNotes" Content="Select a row to delete" HorizontalAlignment="Left" Margin="338,86,0,0" VerticalAlignment="Top" FontSize="14" Width="162" FontStyle="Italic"/>
+        <Label x:Name="lblTitle_Copy1" Content="Update Product Amount" HorizontalAlignment="Left" Margin="45,273,0,0" VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
+        <Label x:Name="lbProductIDUpdate" Content="Product ID:" HorizontalAlignment="Left" Margin="47,306,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <TextBox x:Name="tbIdUpdate" HorizontalAlignment="Left" Margin="173,310,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="16"/>
+        <Label x:Name="lbAmountKgUpdate" Content="Amount (kg):" HorizontalAlignment="Left" Margin="48,335,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <TextBox x:Name="tbAmountKgUpdate" HorizontalAlignment="Left" Margin="173,340,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="16"/>
+        <Button x:Name="btnPlus" Content="+" HorizontalAlignment="Left" Margin="175,375,0,0" VerticalAlignment="Top" FontSize="16" Width="58" Height="28" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="btnPlus_Click" />
+        <Button x:Name="btnMinus" Content="-" HorizontalAlignment="Left" Margin="238,375,0,0" VerticalAlignment="Top" FontSize="16" Width="55" Height="28" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="btnMinus_Click" />
+        <Label x:Name="responselbl" Content="Label" HorizontalAlignment="Left" Margin="400,15,0,0" VerticalAlignment="Top" Foreground="Red"/>
+    </Grid>
+</Window>

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "4+T9VWu4lDtzJ55QB42Kf4W38e0sc2WhCJk9c5Zjank=",
+  "Source": "FarmInventoryREST",
+  "BasePath": "_content/FarmInventoryREST",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

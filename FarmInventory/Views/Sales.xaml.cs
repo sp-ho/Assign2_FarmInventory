@@ -1,10 +1,14 @@
 ﻿using FarmInventory.Controllers;
 using FarmInventory.Models;
+using Newtonsoft.Json;
 using Npgsql;
+using Octokit;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +28,8 @@ namespace FarmInventory.Views
     /// </summary>
     public partial class Sales : Window
     {
-        private SalesController salesController; 
+        private SalesController salesController;
+        private string baseUri = "https://localhost:7079/api/Product/";
 
         public Sales()
         {
@@ -40,76 +45,130 @@ namespace FarmInventory.Views
             listBoxProducts.ItemsSource = products; // populate the product list from database to list box
         }
 
-        // Action when the Add To Cart button is pressed by the customer
-        private void btnAddToCart_Click(object sender, RoutedEventArgs e)
+        private async void btnAddToCart_Click(object sender, RoutedEventArgs e)
         {
-
-            // we are going to send the cart item information/ structure we are getting from 
-            // the front-end. We need to create same CartItem.cs classes in this application 
-            // as well
-
-            // Get the selected product from list box 
             Product selectedProduct = listBoxProducts.SelectedItem as Product;
-            
 
             if (selectedProduct != null)
             {
-                // Retrieve the amount entered by the customer
-                double amountPurchased = double.Parse(tbAmount.Text);
-                // Calculate the subtotal based on the amount and unit price
-                decimal subtotal = salesController.calcSubtotal(amountPurchased, selectedProduct.price);
-
-                CartItem cartItem = new CartItem
+                if (double.TryParse(tbAmount.Text, out double amountPurchased))
                 {
-                    // access the selected product's info and use them to create a CartItem object
-                    productName = selectedProduct.name,
-                    productId = selectedProduct.id,
-                    amountPurchased = amountPurchased,
-                    pricePerKg = selectedProduct.price,
-                    subtotal = subtotal
-                };
+                    decimal subtotal = salesController.calcSubtotal(amountPurchased, selectedProduct.price);
 
-                // Create a new thread to add item to cart
-                Thread addToCartThread = new Thread(() =>
-                {
-                    // Add the cart item
-                    salesController.AddCartItem(cartItem);
-
-                    // Dispatcher.Invoke method is used to update the UI by setting the ItemsSource of dataGridCart to updated cart items
-                    Dispatcher.Invoke(() =>
+                    CartItem cartItem = new CartItem
                     {
-                        // Display the cart items in the dataGridCart
-                        dataGridCart.ItemsSource = salesController.GetCartItems();
+                        productName = selectedProduct.name,
+                        productId = selectedProduct.id,
+                        amountPurchased = amountPurchased,
+                        pricePerKg = selectedProduct.price,
+                        subtotal = subtotal
+                    };
 
-                        decimal totalPrice = salesController.calcFinalTotal(); // calculate the total price of all cart items
-                        lblTotalPrice.Content = totalPrice.ToString("C"); // "C" format specifier for currency
+                    try
+                    {
+                        // Serialize the cartItem to JSON
+                        string json = JsonConvert.SerializeObject(cartItem);
 
-                    });
-                });
-                addToCartThread.Start();
+                        // Create HttpClient instance
+                        using (HttpClient httpClient = new HttpClient())
+                        {
+                            httpClient.BaseAddress = new Uri(baseUri);
+                            httpClient.DefaultRequestHeaders.Accept.Clear();
+                            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                            // Create the HttpContent from the JSON data
+                            HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                            // Send POST request to AddCartItem endpoint
+                            HttpResponseMessage response = await httpClient.PostAsync("AddCartItem", content);
+                            response.EnsureSuccessStatusCode();
+
+                            // Read the response content
+                            string responseContent = await response.Content.ReadAsStringAsync();
+
+                            // Deserialize the response JSON to CartItemResponse
+                            CartItemResponse addToCartResponse = JsonConvert.DeserializeObject<CartItemResponse>(responseContent);
+
+                            // Update the UI using the Dispatcher to ensure thread safety
+                            Dispatcher.Invoke(() =>
+                            {
+                                dataGridCart.ItemsSource = addToCartResponse.cartItems;
+                                decimal totalPrice = salesController.calcFinalTotal(); // calculate the total price of all cart items
+                                lblTotalPrice.Content = totalPrice.ToString("C"); // "C" format specifier for currency
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error adding item to cart: " + ex.Message);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid amount entered. Please enter a valid number.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a product from the list.");
             }
         }
 
+
+
         // Action when the Confirm button is pressed by customer
-        private void btnConfirm_Click(object sender, RoutedEventArgs e)
+        private async void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
-            // create a new thread to update the amount of selected product in the inventory
-            Thread confirmThread = new Thread(() =>
+            Thread confirmThread = new Thread(async () =>
             {
                 MessageBox.Show("Purchase confirmed.");
 
-                salesController.UpdateInventory();
-
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    // clear the data grid
-                    dataGridCart.ItemsSource = null;
+                    // Call the UpdateInventory REST API using the HttpClient
+                    HttpResponseMessage response = await UpdateInventoryAsync();
 
-                    // reset total price
-                    lblTotalPrice.Content = "$0.00";
-                });
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            // clear the data grid
+                            dataGridCart.ItemsSource = null;
+
+                            // reset total price
+                            lblTotalPrice.Content = "$0.00";
+                        });
+                    }
+                    else
+                    {
+                        // Handle unsuccessful response (if needed)
+                        MessageBox.Show("Failed to update inventory. Status code: " + response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error updating inventory: " + ex.Message);
+                }
             });
+
             confirmThread.Start();
+        }
+
+        private async Task<HttpResponseMessage> UpdateInventoryAsync()
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new Uri(baseUri);
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // Here, you might need to pass the correct product ID for the UpdateInventory endpoint.
+                // For now, let's assume productId is obtained from somewhere in the Sales window.
+                int productId = 1; // Replace with the actual product ID.
+
+                HttpResponseMessage response = await httpClient.PutAsync($"UpdateInventory/{productId}", null);
+                return response;
+            }
         }
     }
 }

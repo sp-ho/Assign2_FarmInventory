@@ -122,3 +122,5 @@ C:\Users\szepi\Documents\03 work\vanier\block4\appDevelopment\assign2\FarmInvent
 C:\Users\szepi\Documents\03 work\vanier\block4\appDevelopment\assign2\FarmInventory\obj\Debug\FarmInventory.pdb
 C:\Users\szepi\Documents\03 work\vanier\block4\appDevelopment\assign2\FarmInventory\bin\Debug\Newtonsoft.Json.dll
 C:\Users\szepi\Documents\03 work\vanier\block4\appDevelopment\assign2\FarmInventory\bin\Debug\Newtonsoft.Json.xml
+C:\Users\szepi\Documents\03 work\vanier\block4\appDevelopment\assign2\FarmInventory\bin\Debug\Octokit.dll
+C:\Users\szepi\Documents\03 work\vanier\block4\appDevelopment\assign2\FarmInventory\bin\Debug\Octokit.xml

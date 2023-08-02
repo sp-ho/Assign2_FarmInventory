@@ -381,7 +381,7 @@ namespace FarmInventoryREST.Models
             // Use try-catch block to handle exception(s) that may occur during database operations
             try
             {
-                con.Open(); // Replace "your_connection_string_here" with your actual database connection string
+                con.Open(); 
                 
                 
                 string query = "SELECT * FROM products ORDER BY name"; // select all rows in products table in the database
